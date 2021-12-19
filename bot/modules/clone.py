@@ -16,8 +16,11 @@ import string
 
 def cloneNode(update, context):
     args = update.message.text.split(" ", maxsplit=1)
+    reply_to = update.message.reply_to_message
     if len(args) > 1:
         link = args[1]
+    elif reply_to is not None:
+        link = reply_to.text
     else:
         link = ''
     gdtot_link = is_gdtot_link(link)
@@ -27,6 +30,7 @@ def cloneNode(update, context):
             link = gdtot(link)
             deleteMessage(context.bot, msg)
         except DirectDownloadLinkException as e:
+            deleteMessage(context.bot, msg)
             return sendMessage(str(e), context.bot, update)
     if is_gdrive_link(link):
         gd = gdriveTools.GoogleDriveHelper()
@@ -88,6 +92,7 @@ def cloneNode(update, context):
                 try:
                     for i in LOGS_CHATS:
                         msg1 = f'<b>File Cloned: </b> <code>{name}</code>\n'
+                        msg1 += f'<b>Size: </b>{get_readable_file_size(size)}\n'
                         msg1 += f'<b>By: </b>{uname}\n'
                         bot.sendMessage(chat_id=i, text=msg1, reply_markup=button, parse_mode=ParseMode.HTML)
                 except Exception as e:

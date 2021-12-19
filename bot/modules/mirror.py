@@ -301,6 +301,7 @@ class MirrorListener(listeners.MirrorListeners):
                     try:
                         for i in LOGS_CHATS:
                             msg1 = f'<b>File Uploaded: </b> <code>{download_dict[self.uid].name()}</code>\n'
+                            msg1 += f'<b>Size: </b>{size}\n'
                             msg1 += f'<b>By: </b>{uname}\n'
                             bot.sendMessage(chat_id=i, text=msg1, reply_markup=InlineKeyboardMarkup(buttons.build_menu(2)), parse_mode=ParseMode.HTML)
                     except Exception as e:
@@ -391,9 +392,8 @@ def _mirror(bot, update,isTar=False, isZip=False, extract=False, isLeech=False):
             if file.mime_type != "application/x-bittorrent":
                 listener = MirrorListener(bot, update, isTar, isZip, extract, isLeech=isLeech, pswd=pswd)
                 tg_downloader = TelegramDownloadHelper(listener)
-                tg_downloader.add_download(
-                    reply_to, f"{DOWNLOAD_DIR}{listener.uid}/", name
-                )
+                ms = update.message
+                tg_downloader.add_download(ms, f'{DOWNLOAD_DIR}{listener.uid}/', name)
                 sendStatusMessage(update, bot)
                 if len(Interval) == 0:
                     Interval.append(
